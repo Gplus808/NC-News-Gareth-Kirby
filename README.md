@@ -1,6 +1,6 @@
 # Northcoders News API
 
-Make two files in the main folder of the project:
+Make two files in the main folder of the project.
 One named .env.test for testing.
 Another named .env.development for development.
 
