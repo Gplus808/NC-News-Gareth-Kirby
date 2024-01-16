@@ -8,7 +8,6 @@ const {
 const topicData = require('../data/test-data/topics')
 
 const seed = ({ topicData, userData, articleData, commentData }) => {
-  console.log(topicData, " <<<<topicData")
   return db
     .query(`DROP TABLE IF EXISTS comments;`)
     .then(() => {

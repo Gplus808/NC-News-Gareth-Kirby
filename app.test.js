@@ -1,9 +1,11 @@
 const request = require("supertest");
 const db = require("./db/connection")
-
 const app = require("./app")
 const seed = require("./db/seeds/seed")
 const testData = require("./db/data/test-data")
+const fs = require('fs').promises;
+const endPoints = require("./endPoints")
+
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
@@ -14,7 +16,6 @@ describe('/api/topics', () => {
         .get('/api/topics')
         .expect(200)
         .then((response) => {
-            console.log(response.body.topics)
             expect(response.body.topics.length).toBe(3);
             response.body.topics.forEach((topic) => {
                 expect(typeof topic.description).toBe('string');
@@ -22,4 +23,19 @@ describe('/api/topics', () => {
             });
         });
     });
+});
+
+describe('/api/', () => {
+    test('GET:200 returns an object describing all the available endpoints on your API', () => {
+      return request(app)
+      .get('/api/')
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toEqual(endPoints)
+        })
+        .catch((err) => {
+          console.error('Error', err);
+          return err;
+    });
+      })
 });
