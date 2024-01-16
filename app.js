@@ -12,17 +12,12 @@ fs.readFile('endpoints.json', 'utf8', (err, data) => {
         return err;
     }
     endPointsFs = JSON.parse(data)
-    // console.log(endPointsFs)
     return endPointsFs
 })
 
-app.get('/api', (req, res) => {
-    if (!endPointsFs) {
-        res.status(500).send("Endpoint isn't available");
-        return
-    }
+app.get('/api/', (req, res) => {
     return res.json(endPointsFs)
 })
 
 
-module.exports = app,  endPointsFs;
+module.exports = app;

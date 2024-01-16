@@ -4,6 +4,7 @@ const app = require("./app")
 const seed = require("./db/seeds/seed")
 const testData = require("./db/data/test-data")
 const fs = require('fs').promises;
+const endPoints = require("./endPoints")
 
 
 beforeEach(() => seed(testData));
@@ -26,19 +27,15 @@ describe('/api/topics', () => {
 
 describe('/api/', () => {
     test('GET:200 returns an object describing all the available endpoints on your API', () => {
-        return fs.readFile('endPoints.json', 'utf8')
-        .then((data) => {
-        const expected = JSON.parse(data)
-        return request(app)
-        .get('/api/')
-        .expect(200)
-        .then((response) => {
-         expect(response.body).toEqual(expected)
+      return request(app)
+      .get('/api/')
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toEqual(endPoints)
         })
+        .catch((err) => {
+          console.error('Error', err);
+          return err;
+    });
       })
-      .catch(err => {
-        console.error(err);
-        return err;
-  });
-});
 });
