@@ -1,8 +1,17 @@
-const { selectArticle } = require("../models/topics.models")
+const { selectArticle, fetchAllArticles } = require("../models/topics.models")
 
 
+exports.getAllArticles = (req, res, next) => {
+    fetchAllArticles()
+    .then((data) => {
+        res.status(200).send(data)
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
 
-exports.getArticle = (req, res) => {
+exports.getArticle = (req, res, next) => {
     const {article_id} = req.params
     selectArticle(article_id)
         .then((data) => {
@@ -10,6 +19,8 @@ exports.getArticle = (req, res) => {
             res.status(200).send({article})
         })
         .catch((err) => {
-           res.status(404).send(err)
+            next(err)
         })
 }
+
+
