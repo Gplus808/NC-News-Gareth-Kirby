@@ -107,7 +107,7 @@ describe("GET: /api/articles", () => {
       expect(body).toBeSortedBy('created_at', {descending: true})
     })
   })
-  test("Return bad request if url is incorrect", () => {
+  test("Return not found if url is incorrect", () => {
     return request(app)
     .get('/api/articulz')
     .expect(404)
@@ -135,6 +135,27 @@ describe("GET: /api/articles/:article_id/comments", () => {
     .expect(404)
     .then((body) => {
       expect(body.notFound).toBe(true)
+    })
+  })
+  
+  describe("POST: /api/articles/:article_id/comments", () => {
+    test("Return new comment to specified article", () => {
+      return request(app)
+      .post('/api/articles/9/comments')
+      .send({body: "Hello", username: "icellusedkars"})
+      .expect(201)
+      .then(({body}) => {
+        expect((expect((body.body)).toBe("Hello")))
+        expect((body.author)).toBe("icellusedkars")
+      })
+    })
+    test("Return not found if id is incorrect", () => {
+      return request(app)
+      .get('/api/articules/3945/comments')
+      .expect(404)
+      .then((body) => {
+      expect(body.notFound).toBe(true)
+    })
     })
   })
 })

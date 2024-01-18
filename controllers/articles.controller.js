@@ -1,4 +1,4 @@
-const { selectArticle, fetchAllArticles, selectComments } = require("../models/topics.models")
+const { selectArticle, fetchAllArticles, selectComments, postComment } = require("../models/topics.models")
 
 
 exports.getAllArticles = (req, res, next) => {
@@ -29,6 +29,19 @@ exports.getComments = (req, res, next) => {
     .then((data) => {
         const article = data
         res.status(200).send({article})
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+exports.insertComment = (req, res, next) => {
+    const {username, body} = req.body
+    const {article_id} = req.params
+    postComment(username, body, article_id)
+    .then((data) => {
+        console.log(data, "data")
+        res.status(201).send(data)
     })
     .catch((err) => {
         next(err)
