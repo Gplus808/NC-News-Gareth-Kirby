@@ -48,7 +48,6 @@ describe("GET /api/articles/:article_id", () => {
     .expect(200)
     .then(({body}) => {
     const {article} = body;
-    // console.log(article)
     expect(typeof article.title).toBe("string")
     expect(typeof article.topic).toBe("string")
     expect(typeof article.author).toBe("string")
@@ -68,8 +67,6 @@ describe("GET /api/articles/:article_id", () => {
     expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
   })
 })
-})
-
 test("GET: 404 message sent if given a valid but non-existent ID", () => {
   return request(app)
   .get("/api/articles/69420")
@@ -78,6 +75,8 @@ test("GET: 404 message sent if given a valid but non-existent ID", () => {
     expect(response.notFound).toBe(true)
   })
 })
+})
+
 
 describe("GET: /api/articles", () => {
   test("Returns an array of all article objects", () => {
@@ -116,4 +115,26 @@ describe("GET: /api/articles", () => {
     expect(body.notFound).toBe(true)
   })
 })
+})
+
+describe("GET: /api/articles/:article_id/comments", () => {
+  test("Return an array of comments from specified article", () => {
+  return request(app)
+  .get('/api/articles/9/comments')
+  .expect(200)
+  .then(({body}) => {
+    expect((body.article.length)).toBe(2)
+    expect((body.article[0].article_id)).toBe(9)
+    expect((body.article[1].article_id)).toBe(9)
+    expect(body.article).toBeSortedBy('created_at', {descending: true})
+  })
+})
+  test("Return 404 error if article ID doesnt exist", () => {
+    return request(app)
+    .get('/api/articles/420420/comments')
+    .expect(404)
+    .then((body) => {
+      expect(body.notFound).toBe(true)
+    })
+  })
 })

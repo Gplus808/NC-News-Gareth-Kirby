@@ -36,3 +36,18 @@ exports.fetchAllArticles = () => {
             next(err)
         })
     }
+
+    exports.selectComments = (articleId) => {
+        return db.query(`
+        SELECT *
+        FROM comments
+        WHERE comments.article_id = $1
+        ORDER BY created_at DESC;`, [articleId])
+        .then((response) => {
+            if (response.rows[0] === undefined) {
+                return Promise.reject({status: 404, msg: 'Not found'})
+            }
+            return response.rows
+            })
+        }
+      
