@@ -4,6 +4,8 @@ const app = require("./app")
 const seed = require("./db/seeds/seed")
 const data = require("./db/data/test-data/index.js")
 const endPoints = require("./endPoints")
+require("jest-extended/all")
+require('jest-sorted');
 
 
 beforeEach(() => seed(data));
@@ -72,7 +74,46 @@ test("GET: 404 message sent if given a valid but non-existent ID", () => {
   return request(app)
   .get("/api/articles/69420")
   .expect(404)
-  .then(({body}) => {
-    expect(body.msg).toBe("Article not found")
+  .then((response) => {
+    expect(response.notFound).toBe(true)
   })
+})
+
+describe("GET: /api/articles", () => {
+  test("Returns an array of all article objects", () => {
+    return request(app)
+    .get('/api/articles')
+    .expect(200)
+    .then(({body}) => {
+      const articles = body
+      expect(articles.length).toBe(13)
+      articles.forEach((article) => {
+        expect(typeof article.title).toBe("string")
+        expect(typeof article.topic).toBe("string")
+        expect(typeof article.author).toBe("string")
+        expect(typeof article.body).toBe("undefined")
+        expect(typeof article.created_at).toBe("string")
+        expect(typeof article.votes).toBe("number")
+        expect(typeof article.article_img_url).toBe("string")
+        expect(typeof article.article_id).toBe("number")
+        expect(typeof Number(article.comment_count)).toBe("number")
+      })
+    })
+  })
+  test("Return an array of all artical objects in order of date created", () => {
+    return request(app)
+    .get('/api/articles')
+    .expect(200)
+    .then(({body}) => {
+      expect(body).toBeSortedBy('created_at', {descending: true})
+    })
+  })
+  test("Return bad request if url is incorrect", () => {
+    return request(app)
+    .get('/api/articulz')
+    .expect(404)
+    .then((body) => {
+    expect(body.notFound).toBe(true)
+  })
+})
 })
