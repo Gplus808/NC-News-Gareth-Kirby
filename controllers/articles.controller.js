@@ -14,11 +14,11 @@ exports.getAllArticles = (req, res, next) => {
 exports.getArticle = (req, res, next) => {
     const {article_id} = req.params
     selectArticle(article_id)
-        .then((data) => {
-            const article = data
-            res.status(200).send({article})
-        })
-        .catch((err) => {
+    .then((data) => {
+        const article = data
+        res.status(200).send({article})
+    })
+    .catch((err) => {
             next(err)
         })
 }
@@ -40,7 +40,6 @@ exports.insertComment = (req, res, next) => {
     const {article_id} = req.params
     postComment(username, body, article_id)
     .then((data) => {
-        console.log(data, "data")
         res.status(201).send(data)
     })
     .catch((err) => {

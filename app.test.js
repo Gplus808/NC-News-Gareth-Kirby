@@ -151,11 +151,37 @@ describe("GET: /api/articles/:article_id/comments", () => {
     })
     test("Return not found if id is incorrect", () => {
       return request(app)
-      .get('/api/articules/3945/comments')
-      .expect(404)
-      .then((body) => {
-      expect(body.notFound).toBe(true)
+      .post('/api/articles/3945/comments')
+      .send({body: "Hello", username: "icellusedkars"})
+      .expect(400)
+      .then(({body}) => {
+      expect(body.msg).toBe('not an id')
     })
+    })
+    test("Ensure unnessiary properties are ignored", () => {
+      return request(app)
+      .post('/api/articles/9/comments')
+      .send({body: "Hello", username: "icellusedkars", chicken: "waffle"})
+      .expect(201)
+      .then(({body}) => {
+        expect(body).toMatchObject( {
+          comment_id: 19,
+          body: 'Hello',
+          article_id: 9,
+          author: 'icellusedkars',
+          votes: 0
+        })
+        expect(body.chicken).toBe(undefined)
+      })
+    })
+    test('Return 404 if username invalid', () => {
+      return request(app)
+      .post('/api/articles/9/comments')
+      .send({body: "Hello", username: "Marlon-Brando"})
+      .expect(404)
+      .then(({body}) => {
+        expect(body.msg).toBe('Username doesnt exist')
+      })
     })
   })
 })

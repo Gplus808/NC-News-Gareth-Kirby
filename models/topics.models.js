@@ -30,11 +30,11 @@ exports.fetchAllArticles = () => {
     ORDER BY created_at DESC;
     `)
     .then((response) => {
-        return response.rows
-        })
-        .catch((err) => {
-            next(err)
-        })
+            if (response.rows[0] === undefined) {
+                return Promise.reject({status: 404, msg: 'Not found'})
+            }
+            return response.rows
+            })
     }
 
     exports.selectComments = (articleId) => {
@@ -58,9 +58,9 @@ exports.fetchAllArticles = () => {
           VALUES ($1, $2, $3)
           RETURNING *`, [username, body, article_id])
         .then(({rows}) => {
-          if (rows[0] === undefined) {
-            return Promise.reject({status: 404, msg : 'Article not found'})
-          }
+            if (rows === undefined) {
+                return Promise.reject({status: 404, msg: 'Not found'})
+            }
           return rows[0]
         })
       }
