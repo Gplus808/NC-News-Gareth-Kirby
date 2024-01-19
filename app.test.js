@@ -185,3 +185,38 @@ describe("GET: /api/articles/:article_id/comments", () => {
     })
   })
 })
+describe("PATCH: /api/articles/:article_id", () => {
+  test('Return updated article votes', () => {
+    return request(app)
+          .patch('/api/articles/1')
+          .send({inc_votes : -33})
+          .expect(200)
+          .then((data) => {
+            console.log(data.body, "resres")
+            expect(data.body).toMatchObject({
+              article_id: 1,
+              title: 'Living in the shadow of a great man',
+              topic: 'mitch',
+              author: 'butter_bridge',
+              body: 'I find this existence challenging',
+              votes: 67,
+              article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+            })
+          })
+        })
+  test('Return 404 if article ID invalid', () => {
+      return request(app)
+        .patch('/api/articles/93939')
+        .send({inc_votes : -33})
+        .expect(404)
+        .then(({body}) => {
+          console.log(body);
+          expect(body.msg).toBe('Article not found')
+            })
+          })
+
+
+})
+
+// describe("DELETE /api/comments/:comment_id", () => {
+

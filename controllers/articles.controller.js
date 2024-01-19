@@ -1,4 +1,4 @@
-const { selectArticle, fetchAllArticles, selectComments, postComment } = require("../models/topics.models")
+const { selectArticle, fetchAllArticles, selectComments, postComment, editVotes } = require("../models/topics.models")
 
 
 exports.getAllArticles = (req, res, next) => {
@@ -41,6 +41,18 @@ exports.insertComment = (req, res, next) => {
     postComment(username, body, article_id)
     .then((data) => {
         res.status(201).send(data)
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+exports.patchArticleVotes = (req, res, next) => {
+    const {inc_votes} = req.body
+    const {article_id} = req.params
+    editVotes(inc_votes, article_id)
+    .then((data) => {
+        res.status(200).send(data)
     })
     .catch((err) => {
         next(err)

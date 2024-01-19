@@ -1,6 +1,6 @@
 const express = require('express');
 const {getTopics} = require('./controllers/topics.controller');
-const {getArticle, getAllArticles, getComments, insertComment} = require('./controllers/articles.controller')
+const {getArticle, getAllArticles, getComments, insertComment, patchArticleVotes} = require('./controllers/articles.controller')
 const fs = require('fs');
 const app = express();
 
@@ -30,6 +30,8 @@ app.get('/api/articles/:article_id/comments', getComments)
 
 app.post('/api/articles/:article_id/comments', insertComment)
 
+app.patch('/api/articles/:article_id', patchArticleVotes)
+
 app.use((err, req, res, next) => {
   
   if (err.status && err.msg) {
@@ -43,5 +45,6 @@ app.use((err, req, res, next) => {
   }
  next()
 })
+
 
 module.exports = app;
