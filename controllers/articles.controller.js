@@ -1,4 +1,4 @@
-const { selectArticle, fetchAllArticles, selectComments, postComment, editVotes } = require("../models/topics.models")
+const { selectArticle, fetchAllArticles, selectComments, postComment, editVotes, destroyComment } = require("../models/topics.models")
 
 
 exports.getAllArticles = (req, res, next) => {
@@ -53,6 +53,17 @@ exports.patchArticleVotes = (req, res, next) => {
     editVotes(inc_votes, article_id)
     .then((data) => {
         res.status(200).send(data)
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+exports.deleteComment = (req, res, next) => {
+    const {comment_id} = req.params
+    destroyComment(comment_id)
+    .then((data) => {
+        res.status(204).send(data)
     })
     .catch((err) => {
         next(err)

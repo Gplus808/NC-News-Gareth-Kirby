@@ -216,5 +216,21 @@ describe("PATCH: /api/articles/:article_id", () => {
 
 })
 
-// describe("DELETE /api/comments/:comment_id", () => {
-
+describe("DELETE: /api/comments/:comment_id", () => {
+  test("delete the given comment by comment_id", () => {
+    return request(app)
+    .delete("/api/comments/1")
+    .expect(204)
+    .then((body) => {
+      expect(body.body).toEqual({})
+    })
+  })
+  test("return 404 comment not found if given invalid ID", () => {
+    return request(app)
+    .delete("/api/comments/38585")
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toEqual('Comment not found')
+    })
+  })
+})
