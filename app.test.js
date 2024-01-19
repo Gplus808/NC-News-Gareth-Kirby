@@ -192,7 +192,6 @@ describe("PATCH: /api/articles/:article_id", () => {
           .send({inc_votes : -33})
           .expect(200)
           .then((data) => {
-            console.log(data.body, "resres")
             expect(data.body).toMatchObject({
               article_id: 1,
               title: 'Living in the shadow of a great man',
@@ -210,7 +209,6 @@ describe("PATCH: /api/articles/:article_id", () => {
         .send({inc_votes : -33})
         .expect(404)
         .then(({body}) => {
-          console.log(body);
           expect(body.msg).toBe('Article not found')
             })
           })
