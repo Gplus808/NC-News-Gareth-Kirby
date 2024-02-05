@@ -3,6 +3,9 @@ const {getTopics} = require('./controllers/topics.controller');
 const {getArticle, getAllArticles, getComments, insertComment, patchArticleVotes, deleteComment} = require('./controllers/articles.controller')
 const fs = require('fs');
 const app = express();
+const cors = require('cors');
+
+app.use(cors());
 
 app.use(express.json());
 
