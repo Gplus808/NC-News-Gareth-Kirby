@@ -9,7 +9,11 @@ require('dotenv').config({
 if (!process.env.PGDATABASE && !process.env.DATABASE_URL) {
   throw new Error('PGDATABASE or DATABASE_URL not set');
 }
-const config = {};
+const config = {
+  max: 10,
+  idleTimeoutMillis: 30000, 
+  connectionTimeoutMillis: 2000,
+};
 
 if (ENV === 'production') {
   config.connectionString = process.env.DATABASE_URL;

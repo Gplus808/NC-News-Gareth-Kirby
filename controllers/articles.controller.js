@@ -2,9 +2,12 @@ const { selectArticle, fetchAllArticles, selectComments, postComment, editVotes,
 
 
 exports.getAllArticles = (req, res, next) => {
-    fetchAllArticles()
-    .then((data) => {
-        res.status(200).send(data)
+    const page = parseInt(req.query.page) || 1; 
+    const limit = parseInt(req.query.limit) || 3; 
+    
+    fetchAllArticles(page, limit)
+    .then((articles) => {
+        res.status(200).send({ articles, page, limit })
     })
     .catch((err) => {
         next(err)
@@ -36,9 +39,9 @@ exports.getComments = (req, res, next) => {
 }
 
 exports.insertComment = (req, res, next) => {
-    const {username, body} = req.body
+    const {body} = req.body
     const {article_id} = req.params
-    postComment(username, body, article_id)
+    postComment( body, article_id)
     .then((data) => {
         res.status(201).send(data)
     })

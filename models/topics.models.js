@@ -20,22 +20,25 @@ exports.selectArticle = (articleId) => {
         })
     }
 
-exports.fetchAllArticles = () => {
-    return db.query(`
-    SELECT articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url, articles.article_id,
-    COUNT(comments.article_id) AS comment_count
-    FROM articles
-    LEFT JOIN comments on articles.article_id = comments.article_id
-    GROUP BY articles.article_id
-    ORDER BY created_at DESC;
-    `)
-    .then((response) => {
-            if (response.rows[0] === undefined) {
-                return Promise.reject({status: 404, msg: 'Not found'})
-            }
-            return response.rows
-            })
-    }
+    exports.fetchAllArticles = (page = 1, limit = 3) => {
+      const offset = (page - 1) * limit;
+  
+      return db.query(`
+          SELECT articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url, articles.article_id,
+          COUNT(comments.article_id) AS comment_count
+          FROM articles
+          LEFT JOIN comments ON articles.article_id = comments.article_id
+          GROUP BY articles.article_id
+          ORDER BY created_at DESC
+          LIMIT $1 OFFSET $2;
+      `, [limit, offset]) 
+      .then((response) => {
+          if (response.rows.length === 0) {
+              return Promise.reject({status: 404, msg: 'Not found'})
+          }
+          return response.rows;
+      })
+  }
 
     exports.selectComments = (articleId) => {
         return db.query(`
@@ -52,11 +55,11 @@ exports.fetchAllArticles = () => {
         }
       
     
-    exports.postComment = (username, body, article_id) => {
+    exports.postComment = (body, article_id) => {
         return db.query(`
-          INSERT INTO comments (author, body, article_id)
-          VALUES ($1, $2, $3)
-          RETURNING *`, [username, body, article_id])
+          INSERT INTO comments (body, article_id)
+          VALUES ($1, $2)
+          RETURNING *`, [body, article_id])
         .then(({rows}) => {
             if (rows === undefined) {
                 return Promise.reject({status: 404, msg: 'Not found'})
