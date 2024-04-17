@@ -20,23 +20,31 @@ exports.selectArticle = (articleId) => {
         })
     }
 
-exports.fetchAllArticles = () => {
-    return db.query(`
-    SELECT articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url, articles.article_id,
-    COUNT(comments.article_id) AS comment_count
-    FROM articles
-    LEFT JOIN comments on articles.article_id = comments.article_id
-    GROUP BY articles.article_id
-    ORDER BY created_at DESC;
-    `)
-    .then((response) => {
-            if (response.rows[0] === undefined) {
-                return Promise.reject({status: 404, msg: 'Not found'})
-            }
-            return response.rows
-            })
-    }
+exports.fetchAllArticles = (topic, sort_by = "created_at", order = "desc", limit, p = 0) => {
+  const validSortBy = ["article_id", "title", "topic", "author", "created_at", "votes", "article_img_url", "comment_count"];
+  const validOrder = ["ASC", "asc", "DESC", "desc"];
+  if (!validSortBy.includes(sort_by)) return Promise.reject({ status: 400, msg: "Invalid column for sorting" });
+  if (!validOrder.includes(order)) return Promise.reject({ status: 400, msg: "Invalid sorting order" });
 
+  const parameters = [];
+
+  let query = `SELECT a.article_id, a.title, a.topic, a.author, a.created_at, a.votes, a.article_img_url, COUNT(c.comment_id) comment_count`;
+  limit ? (query += `, ${limit} total_count`) : (query += `, (SELECT COUNT(*) FROM articles) total_count`);
+  query += ` FROM articles a LEFT OUTER JOIN comments c on c.article_id = a.article_id`;
+
+  if (topic) {
+    query += ` WHERE a.topic = $1`;
+    parameters.push(topic);
+  }
+
+  query += ` GROUP BY a.article_id ORDER BY ${sort_by} ${order}`;
+
+  if (limit) query += ` LIMIT ${limit} OFFSET ${p}`;
+
+  console.log(query);
+
+  return db.query(query, parameters);
+};
     exports.selectComments = (articleId) => {
         return db.query(`
         SELECT *
