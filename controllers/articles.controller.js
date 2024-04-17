@@ -2,12 +2,9 @@ const { selectArticle, fetchAllArticles, selectComments, postComment, editVotes,
 
 
 exports.getAllArticles = (req, res, next) => {
-    const page = parseInt(req.query.page) || 1; 
-    const limit = parseInt(req.query.limit) || 3; 
-    
-    fetchAllArticles(page, limit)
-    .then((articles) => {
-        res.status(200).send({ articles, page, limit })
+    fetchAllArticles()
+    .then((data) => {
+        res.status(200).send(data)
     })
     .catch((err) => {
         next(err)
